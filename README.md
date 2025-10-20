@@ -1,18 +1,10 @@
 ## Suika - game (watermelon game)
-This project is a physics-based watermelon game created using **Matter.js** and **Vite**.
+This project is a physics-based watermelon game created using **Matter.js**
 
-## How to Run
-1. Install **Node.js**  
-   [Download Node.js](https://nodejs.org/)
-2. Open **terminal** and move to the project folder:
-   ```sh
-   cd watermelon-game   
-   npm install
-   npm run dev
-Now, open localhost in your browser to play the game! 
+
+
 
 ## Stack 
-Vite: Quick frontend development server</br>
 Matter.js: Physics engine</br>
 JavaScript (ES6)</br>
 
