@@ -45,14 +45,7 @@ html{
 }
 
 
-#header {
-height:30px;
-width:100%;
-//background-color:#009900;
-//margin:auto;
-text-align:center;
-  position: relative;
-}
+
 
 p{
 	margin: 0 0;
@@ -65,7 +58,7 @@ h1 {
 
 #world {
 	position: relative;
-	height: calc(100vh - 30px);
+	height: 100%;
 	width:100%;
 	text-align:center;
 
@@ -128,4 +121,14 @@ h1 {
 	width: 5%;
 	height: 3%;
 	text-align:center;
+}
+#header {
+	top: 0px;
+	height:8%;
+	width:100%;
+	font-size: 4vh;
+	//background-color:#009900;
+	//margin:auto;
+	text-align:center;
+	position: absolute;
 }

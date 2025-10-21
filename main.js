@@ -29,6 +29,8 @@ import { FRUITS_HLW } from "./fruits.js";
 	let disableAction = false;
 	let isGameOver = false;
 	var nextIndex = Math.floor(Math.random() * 6);  
+	let yCompression=1;
+	const topLimit=21.5;
 	
 	bestScore=getCookie("BestScore");
 	if(bestScore=="")
@@ -38,24 +40,21 @@ import { FRUITS_HLW } from "./fruits.js";
 	// Canvas setup
 	var canvas2 = document.getElementById("canvas");
 	var canvas = document.getElementById("world");
-	canvas.height = document.getElementById("world").clientHeight;//window.innerHeight;
-	canvas.width = document.getElementById("world").clientWidth;//window.innerWidth;
+	canvas.height = document.getElementById("world").clientHeight;
+	canvas.width = document.getElementById("world").clientWidth;
 	var ratio= canvas.height/850;//850 original height
 	
 	
 	window.addEventListener("resize", function () {
-		canvas.height = document.getElementById("world").clientHeight;//window.innerHeight;
-		canvas.width = document.getElementById("world").clientWidth;//window.innerWidth;
-		console.log("hr="+canvas.height);	
-	
+		canvas.height = document.getElementById("world").clientHeight;
+		canvas.width = document.getElementById("world").clientWidth;
+		
+		
 	});  
-
-
 
 const engine = Engine.create();
 const render = Render.create({
 	  engine, 
-	  //element: canvas,
 	  canvas: canvas2,
 	  options: {
 		wireframes: false,
@@ -83,14 +82,7 @@ const groundWall = Bodies.rectangle(canvas.width/2,percentY(96), percentX(38), p
   render: { fillStyle: "rgba(0, 0, 255, 0)" /*"#E6B143"*/ }
 })
 
-const topLine = Bodies.rectangle(canvas.width/2, percentY(20), percentX(36), percentY(1), {
-
-  name: "topLine",
-  isSensor: true,
-  isStatic: true,
-  render: { fillStyle:"rgba(0, 0, 255, 0)" /*"#E6B143"*/}
-})
-
+//1920*1080
 function percentX(percent) {
   return Math.round((percent / 100) * canvas.width);
 }
@@ -98,7 +90,7 @@ function percentY(percent) {
   return Math.round((percent / 100) * canvas.height);
 }
 
-var NextFruit = Bodies.circle(10, percentY(10),  FRUITS[nextIndex].radius*ratio, {
+var NextFruit = Bodies.circle(10, percentY(7),  FRUITS[nextIndex].radius*ratio, {
     index: -1,
     isSleeping: false,
 	  isStatic: true,
@@ -109,16 +101,10 @@ var NextFruit = Bodies.circle(10, percentY(10),  FRUITS[nextIndex].radius*ratio,
 	  }}});
 	  
 	  
-World.add(world, [rightWall, leftWall, groundWall, topLine,NextFruit]);
+World.add(world, [rightWall, leftWall, groundWall,NextFruit]);
 
 Render.run(render);
 Runner.run(engine);
-
-
-
-
-
-
 
 
 //--------------------------------------------------
@@ -194,7 +180,6 @@ document.getElementById("Score").onclick = function() {
 		if(skin==1)
 			body.style.backgroundImage = 'url(./images/background2.jpg)';
 		
-		
 		Restart();
 	};
 //--------------------------------------------------
@@ -220,7 +205,7 @@ function addFruit() {
  
   var fruit = FRUITS[nextIndex];
 
-  const body = Bodies.circle(canvas.width/2, percentY(10),  fruit.radius*ratio, {
+  const body = Bodies.circle(canvas.width/2, percentY(13),  fruit.radius*ratio, {
     index: nextIndex,
     isSleeping: true,
     render: {
@@ -240,7 +225,7 @@ function addFruit() {
 	
 	World.remove(world, NextFruit);
 	 
-	NextFruit = Bodies.circle(percentX(84.2), percentY(23),  FRUITS[nextIndex].radius*ratio, {
+	NextFruit = Bodies.circle(percentX(84.2), percentY(26),  FRUITS[nextIndex].radius*ratio, {
     index: -1,
     isSleeping: false,
 	  isStatic: true,
@@ -253,23 +238,18 @@ function addFruit() {
   
 }
 
-
 //--------------------------------------------------
 // LaunchFruit
 //--------------------------------------------------
 function LaunchFruit(event) 
 {
-	
 	//check if lost
 	let lost=false;
 	engine.world.bodies.forEach((body)=>{
 		if((body.isStatic==false)&&(body.isSleeping == false))
 		{
-			//console.log(body.position.y+" "+topLine.position.y);
-			if(body.position.y<topLine.position.y)
-			{
+			if(body.position.y<percentY(topLimit))
 				lost=true;
-			}
 		}
 	});
 	if(lost==true)
@@ -333,42 +313,36 @@ window.onkeydown = (event) => {
 	document.getElementById("info").innerHTML="c="+event.code;
 	
 	if(isGameOver == true)
-	{ 
-		switch(event.code) {
-			case "Space":
-				Restart();
-			break;
-		}
-		
-	}
-	
-	if(disableAction) { 
+		if(event.code=="Space")
+			Restart();
+
+	if(disableAction) 
 		return;
-	}
   
-  switch(event.code) {
-	case "ArrowLeft":
-    case "KeyA":
-      if(currentBody.position.x - currentFruit.radius*ratio > percentX(-16)+canvas.width/2)
-      Body.setPosition(currentBody, {
-      x: currentBody.position.x -  percentX(2),
-      y: currentBody.position.y,
-    });
-    break;
-	case "ArrowRight":
-    case "KeyD":
-      if(currentBody.position.x + currentFruit.radius*ratio < percentX(+16)+canvas.width/2)
-      Body.setPosition(currentBody, {
-      x: currentBody.position.x +  percentX(2),
-      y: currentBody.position.y,
-    });
-    break;
-	case "ArrowDown":
-    case "KeyS":
-	case "Space":
-		LaunchFruit();
-      break;
-  }
+	switch(event.code) 
+	{
+		case "ArrowLeft":
+		case "KeyA":
+		  if(currentBody.position.x - currentFruit.radius*ratio > percentX(-16)+canvas.width/2)
+		  Body.setPosition(currentBody, {
+		  x: currentBody.position.x -  percentX(2),
+		  y: currentBody.position.y,
+		});
+		break;
+		case "ArrowRight":
+		case "KeyD":
+		  if(currentBody.position.x + currentFruit.radius*ratio < percentX(+16)+canvas.width/2)
+		  Body.setPosition(currentBody, {
+		  x: currentBody.position.x +  percentX(2),
+		  y: currentBody.position.y,
+		});
+		break;
+		case "ArrowDown":
+		case "KeyS":
+		case "Space":
+			LaunchFruit();
+		  break;
+	}
 }
 //--------------------------------------------------
 // afterRender
@@ -381,7 +355,8 @@ Events.on(render, "afterRender", (event) => {
 		ctx.fillStyle = "rgba(241,213,130,255)";
 	if(skin==1)
 		ctx.fillStyle = "rgba(158,128,250,255)";
-	ctx.fillRect(canvas.width/2- percentX(18), percentY(19),  percentX(35), percentY(2));
+	//ctx.fillStyle = "rgba(158,255,255,255)";
+	ctx.fillRect(canvas.width/2- percentX(18), percentY(topLimit),  percentX(34), percentY(2));
 	ctx.stroke();
 
 });
@@ -392,8 +367,7 @@ Events.on(render, "afterRender", (event) => {
 Events.on(engine,"collisionStart", (event) => {
   event.pairs.forEach((collision) => {
 	  
-	  if(!((collision.bodyA.name === "topLine" || collision.bodyB.name === "topLine")))
-		CalculateScore();
+	CalculateScore();
     if(collision.bodyA.index === collision.bodyB.index){
       const index = collision.bodyA.index;
 		
