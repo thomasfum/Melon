@@ -16,7 +16,9 @@ import { FRUITS_HLW } from "./fruits.js";
 	Events = Matter.Events,
 	Render = Matter.Render,
 	Runner = Matter.Runner,
+	Composite = Matter.Composite,
 	World = Matter.World;
+	 
 	  
 	let FRUITS=  FRUITS_PUBLIC;
 	PreloadImages();
@@ -50,10 +52,50 @@ import { FRUITS_HLW } from "./fruits.js";
 		canvas.width = document.getElementById("world").clientWidth;
 		
 		
+		
+		// Render.setSize(render, canvas.width*1.18, canvas.height);
+		 
+		 
+		   render.bounds.max.x = canvas.width;
+  render.bounds.max.y = canvas.height;
+  render.options.width = canvas.width;
+  render.options.height = canvas.height;
+  render.canvas.width = canvas.width;
+  render.canvas.height = canvas.height;
+  
+  Matter.Render.setPixelRatio(render, window.devicePixelRatio); // added this
+  //Matter.Render.setPixelRatio(render,1); // added this
+  
+		 
+		// Render.lookAt(render, Composite.allBodies(engine.world),{ x: 0, y: 0 },{ x: canvas.width /2, y: canvas.height/2 });
+		 Render.lookAt(render, Composite.allBodies(engine.world));
+		
+/*
+        // update the render bounds to fit the scene
+        Render.lookAt(render, Composite.allBodies(engine.world), {
+            x: 200,
+            y: 200
+        });
+*/
+/*
+		World.remove(world, [rightWall, leftWall, groundWall,NextFruit]);
+	
+		engine.world.bodies.forEach((body)=>{
+				World.remove(world, body);
+			});
+
+		recalclc();
+		
+		currentBody.position.x=canvas.width/2;
+		currentBody.position.y= percentY(13);
+		
+		World.add(world, [rightWall, leftWall, groundWall,NextFruit,currentBody]);
+		//addFruit();
+	*/	
 	});  
 
 const engine = Engine.create();
-const render = Render.create({
+var render = Render.create({
 	  engine, 
 	  canvas: canvas2,
 	  options: {
@@ -61,36 +103,34 @@ const render = Render.create({
 		background: "#FF000000F7F4C8",
 		width: canvas.width,//620,
 		height: canvas.height,//850,
+		pixelRatio:  window.devicePixelRatio // here
 	  }
 	}); 
 
 const world = engine.world;
+var leftWall;
+var rightWall;
+var groundWall;
+var NextFruit;
 
+function recalclc()
+{
+	leftWall = Bodies.rectangle(percentX(-18)+canvas.width/2, percentY(50), percentX(2), percentY(100), {
+		isStatic: true, 
+		render: { fillStyle: "rgba(0, 0, 255, 0)" /*"#E6B143" */}
+	  })
 
-const leftWall = Bodies.rectangle(percentX(-18)+canvas.width/2, percentY(50), percentX(2), percentY(100), {
-    isStatic: true, 
-    render: { fillStyle: "rgba(0, 0, 255, 0)" /*"#E6B143" */}
-  })
+	rightWall = Bodies.rectangle(percentX(18)+canvas.width/2, percentY(50), percentX(2), percentY(100), {
+	  isStatic: true, 
+	  render: { fillStyle: "rgba(0, 0, 255, 0)" /*"#E6B143"*/ }
+	})
 
-const rightWall = Bodies.rectangle(percentX(18)+canvas.width/2, percentY(50), percentX(2), percentY(100), {
-  isStatic: true, 
-  render: { fillStyle: "rgba(0, 0, 255, 0)" /*"#E6B143"*/ }
-})
+	groundWall = Bodies.rectangle(canvas.width/2,percentY(96), percentX(38), percentY(4), {
+	  isStatic: true, 
+	  render: { fillStyle: "rgba(0, 0, 255, 0)" /*"#E6B143"*/ }
+	})
 
-const groundWall = Bodies.rectangle(canvas.width/2,percentY(96), percentX(38), percentY(4), {
-  isStatic: true, 
-  render: { fillStyle: "rgba(0, 0, 255, 0)" /*"#E6B143"*/ }
-})
-
-//1920*1080
-function percentX(percent) {
-  return Math.round((percent / 100) * canvas.width);
-}
-function percentY(percent) {
-  return Math.round((percent / 100) * canvas.height);
-}
-
-var NextFruit = Bodies.circle(10, percentY(7),  FRUITS[nextIndex].radius*ratio, {
+	NextFruit = Bodies.circle(percentX(84.2), percentY(26),  FRUITS[nextIndex].radius*ratio, {
     index: -1,
     isSleeping: false,
 	  isStatic: true,
@@ -100,11 +140,23 @@ var NextFruit = Bodies.circle(10, percentY(7),  FRUITS[nextIndex].radius*ratio, 
 	  yScale: ratio,
 	  }}});
 	  
+}
+recalclc();
+
+//1920*1080
+function percentX(percent) {
+  return Math.round((percent / 100) * canvas.width);
+}
+function percentY(percent) {
+  return Math.round((percent / 100) * canvas.height);
+}
+
 	  
 World.add(world, [rightWall, leftWall, groundWall,NextFruit]);
 
 Render.run(render);
-Runner.run(engine);
+//Runner.run(engine);//0.19
+Runner.run(Matter.Runner.create(), engine);//0.20
 
 
 //--------------------------------------------------
