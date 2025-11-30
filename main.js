@@ -63,8 +63,8 @@ import { FRUITS_HLW } from "./fruits.js";
   render.canvas.width = canvas.width;
   render.canvas.height = canvas.height;
   
-  Matter.Render.setPixelRatio(render, window.devicePixelRatio); // added this
-  //Matter.Render.setPixelRatio(render,1); // added this
+  //Matter.Render.setPixelRatio(render, window.devicePixelRatio); // added this
+  Matter.Render.setPixelRatio(render,1); // added this
   
 		 
 		// Render.lookAt(render, Composite.allBodies(engine.world),{ x: 0, y: 0 },{ x: canvas.width /2, y: canvas.height/2 });
